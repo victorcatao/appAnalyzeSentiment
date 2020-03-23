@@ -1,0 +1,25 @@
+/* 
+  Localizable.strings
+  AnalyzeSentiment
+
+  Created by Victor Catão on 21/03/20.
+  Copyright © 2020 Victor Catão. All rights reserved.
+*/
+
+// General
+"unknownError" = "Erro desconhecido.";
+"requestErrorNoConnection" = "Sem conexão com a internet.";
+"requestErrorSessionExpired" = "Sessão expirada";
+"errorNotAuthorized" = "Não autorizado";
+"error" = "Erro!";
+"ok" = "Ok";
+"cancel" = "Cancelar";
+"yes" = "Sim";
+"no" = "Não";
+
+// Home
+"home.title" = "Twitter Sentiments";
+"home.searchBar.placeholder" = "Usuário (ex.: neymarjr)";
+"home.searchBar.buttonTitle" = "Buscar";
+"home.error.user_invalid" = "Usuário inválido";
+"home.error.user_without_nickname" = "O usuário selecionado possui dados incompletos.";
