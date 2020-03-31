@@ -40,18 +40,19 @@ final class HomeViewController: ViewCodeProtocol<HomeView> {
     private func setupTableViews() {
         viewModel
             .tweetsTableData
-            .bind(to: containerView.tableView.rx.items(cellIdentifier: String(describing: TweetTableViewCell.self), cellType: TweetTableViewCell.self)){ _, element, cell in
-                UIView.animate(withDuration: 0.3) {
-                    cell.setup(tweet: element)
-                }
+            .asDriver()
+            .drive(containerView.tableView.rx.items(cellIdentifier: String(describing: TweetTableViewCell.self), cellType: TweetTableViewCell.self)) { _, element, cell in
+               UIView.animate(withDuration: 0.3) {
+                   cell.setup(tweet: element)
+               }
             }.disposed(by: disposeBag)
         
         viewModel
             .users
-            .bind(to: containerView.autocompleteTableView.rx.items(cellIdentifier: String(describing: UserTableViewCell.self), cellType: UserTableViewCell.self)) { row, element, cell in
+            .asDriver()
+            .drive(containerView.autocompleteTableView.rx.items(cellIdentifier: String(describing: UserTableViewCell.self), cellType: UserTableViewCell.self)){ row, element, cell in
                 cell.setup(user: element)
             }.disposed(by: disposeBag)
-        
         
         containerView
             .autocompleteTableView
@@ -100,7 +101,8 @@ final class HomeViewController: ViewCodeProtocol<HomeView> {
             .searchButton
             .rx
             .tap
-            .bind(onNext: { [weak self] in
+            .asDriver()
+            .drive(onNext: { [weak self] in
                 self?.userDidTapSearch()
             })
             .disposed(by: disposeBag)
