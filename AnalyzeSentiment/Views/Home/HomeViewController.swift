@@ -57,7 +57,8 @@ final class HomeViewController: ViewCodeProtocol<HomeView> {
             .autocompleteTableView
             .rx
             .modelSelected(User.self)
-            .subscribe(onNext: { [weak self] user in
+            .asDriver()
+            .drive(onNext: { [weak self] user in
                 self?.view.endEditing(true)
                 self?.containerView.searchBar.searchTextField.text = user.nickname
                 self?.viewModel.userSelected.accept(user)
@@ -66,11 +67,12 @@ final class HomeViewController: ViewCodeProtocol<HomeView> {
         
         viewModel
             .users
+            .asDriver()
             .map({
                 CGFloat($0.count) * HomeView.Layout.heightAutocompleteCell > HomeView.Layout.maxHeightTableView ?
                     HomeView.Layout.maxHeightTableView : CGFloat($0.count) * HomeView.Layout.heightAutocompleteCell
             })
-            .subscribe(onNext: { [weak self] height in
+            .drive(onNext: { [weak self] height in
                 self?.containerView.blurView.isHidden = height == 0
                 self?.containerView.updateAutocompleteTableViewHeight(height)
             })
@@ -85,9 +87,10 @@ final class HomeViewController: ViewCodeProtocol<HomeView> {
             .rx
             .text
             .orEmpty
-            .debounce(.milliseconds(200), scheduler: MainScheduler.instance)
+            .asDriver()
+            .debounce(.milliseconds(200))
             .distinctUntilChanged()
-            .subscribe(onNext: { [weak self] value in
+            .drive(onNext: { [weak self] value in
                 self?.viewModel.searchUserText.accept(value)
             })
             .disposed(by: disposeBag)
@@ -108,7 +111,8 @@ final class HomeViewController: ViewCodeProtocol<HomeView> {
             .searchTextField
             .rx
             .controlEvent(.editingDidEndOnExit)
-            .subscribe(onNext: { [weak self] in
+            .asDriver()
+            .drive(onNext: { [weak self] in
                 self?.userDidTapSearch()
             })
             .disposed(by: disposeBag)
@@ -116,7 +120,8 @@ final class HomeViewController: ViewCodeProtocol<HomeView> {
         // Hanlde loader
         viewModel
             .isLoading
-            .subscribe(onNext: { [weak self] isLoading in
+            .asDriver()
+            .drive(onNext: { [weak self] isLoading in
                 isLoading ? self?.showLoader() : self?.hideLoader()
             })
             .disposed(by: disposeBag)
@@ -124,7 +129,8 @@ final class HomeViewController: ViewCodeProtocol<HomeView> {
         // Show error message
         viewModel
             .errorMessage
-            .subscribe(onNext: { [weak self] text in
+            .asDriver(onErrorJustReturn: nil)
+            .drive(onNext: { [weak self] text in
                 guard let message = text else { return }
                 self?.showErrorAlert(message: message)
             })
